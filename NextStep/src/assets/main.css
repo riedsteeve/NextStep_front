@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Configuration pour Tailwind 4 + Vuetify */
+@layer base {
+  /* On peut ajouter des ajustements ici si le preflight de Tailwind est trop agressif */
+}
+
+@layer components {
+  /* Vos composants personnalisés */
+}
+
+@layer utilities {
+  /* Les utilitaires Tailwind seront prioritaires */
+}
+
+@import './base.css';
