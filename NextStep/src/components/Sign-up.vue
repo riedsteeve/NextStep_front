@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import logo from "@/components/images/NextStep_logo.png";
-defineProps<{
-  title: string
-  welcome: string
-}>();
+import axios from 'axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter()
+
 
 const Utilisateur = reactive({
   nom: '',
@@ -13,26 +13,58 @@ const Utilisateur = reactive({
   password: ''
 });
 
-function submitForm(){
-  console.log("Formulaire soumis :", Utilisateur);
-  alert("Inscription réussie pour " + Utilisateur.prenom);
-  console.log(Utilisateur);
+const messageVisible = ref(false)
+const CreatingAccountMessage = 'Votre a été bien créé, vous allez etre ridirigé vers le formulaire de connexion'
+const errorVisible = ref(false)
+const failedMessage = "Respecté la longeur du mot de passe prévu"
+
+const URL_REGISTER = import.meta.env.VITE_URL_REGISTER_API;
+
+
+const submitForm = async (): Promise<void> => {
+  try {
+    messageVisible.value = true
+    errorVisible.value = false
+    const response = await axios.post(
+      URL_REGISTER,{
+        nom: Utilisateur.nom,
+        prenom: Utilisateur.prenom,
+        email: Utilisateur.email,
+        password: Utilisateur.password
+      },
+      {
+        headers : {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        withCredentials: true,
+      },
+    )
+    //console.log("Compte créé")
+    
+  }
+  catch (err)
+  {
+    messageVisible.value = false
+    errorVisible.value = true
+    console.error("Impossible d'envoyer ce post", err)
+  }
 }
+
+function gotoConnexion(){
+    router.push("/connexion")
+  }
 
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center pt-5 bg-gray-200 gap-8 pb-10 p-5">
+  <div class="min-h-screen flex flex-col items-center  bg-gray-200  pb-10 p-5">
 
     <div class="w-full max-w-xl p-6 bg-white shadow-xl text-black rounded-md flex flex-col items-center text-center">
       
-      <div class="flex items-center gap-3 mb-2">
-      <h2 class="text-2xl font-bold mb-2">{{ title }}</h2>
-      <img :src='logo' class="h-30 w-auto" alt="NextStep_logo">
-      </div>
-      <p class="mt-2 mb-4">{{ welcome }}</p>
+      
 
-      <ul class="flex flex-wrap justify-center gap-2 p-4">
+      <ul class="flex flex-wrap justify-center gap-2">
         <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">100% gratuit</li>
         <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">Sécurisé</li>
         <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">Sans publicité</li>
@@ -40,7 +72,7 @@ function submitForm(){
 
       <form
         @submit.prevent="submitForm"
-        class="w-full bg-white p-8 rounded-xl shadow-2xl flex flex-col gap-4 m-2"
+        class="w-full bg-white p-8 rounded-xl  flex flex-col gap-4 m-2"
       >
         <h2 class="text-2xl font-bold text-center text-gray-800">Crée votre compte</h2>
 
@@ -82,7 +114,7 @@ function submitForm(){
           </div>
 
           <div class="flex flex-col gap-1">
-            <label for="password" class="text-sm font-medium text-gray-700 text-left">Mot de passe</label>
+            <label for="password" class="text-sm font-medium text-gray-700 text-left">Mot de passe(Minimun 6 caractère)</label>
             <input
                 type="password"
                 id="password"
@@ -101,9 +133,21 @@ function submitForm(){
           Envoyer
         </button>
 
-        <p class="text-sm">Vous avez déjà un compte ? <a href="#" class="text-purple-700 hover:underline">Connectez-vous</a></p>
-
+          <p v-if="messageVisible"
+            class="text-sm font-medium text-center p-3 rounded-lg bg-purple-200 text-black"
+          >
+          {{ CreatingAccountMessage }}
+          </p>
+          <p v-if="errorVisible"
+            class="text-sm font-medium text-center p-3 rounded-lg bg-red-200 text-black"
+          >
+          {{ failedMessage }}
+          </p>
       </form>
+         <p class="text-sm">Vous avez déjà un compte ? <button @click="gotoConnexion" class="text-purple-700 hover:underline">Connectez-vous</button></p>
+
+         <p class="text-sm"><button @click="gotoConnexion" class="text-purple-700 hover:underline">Politique de confidentialité</button></p>
+
 
     </div>
   </div>
