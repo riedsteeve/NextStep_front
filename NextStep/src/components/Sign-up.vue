@@ -14,16 +14,16 @@ const Utilisateur = reactive({
 });
 
 const messageVisible = ref(false)
-const CreatingAccountMessage = 'Votre a été bien créé, vous allez etre ridirigé vers le formulaire de connexion'
+const CreatingAccountMessage = 'Votre compte a été bien créé, vous allez etre ridirigé vers le formulaire de connexion'
 const errorVisible = ref(false)
-const failedMessage = "Respecté la longeur du mot de passe prévu"
+const failedMessage = ref("Respecté la longeur du mot de passe prévu")
 
 const URL_REGISTER = import.meta.env.VITE_URL_REGISTER_API;
 
 
 const submitForm = async (): Promise<void> => {
   try {
-    messageVisible.value = true
+    messageVisible.value = false
     errorVisible.value = false
     const response = await axios.post(
       URL_REGISTER,{
@@ -39,21 +39,26 @@ const submitForm = async (): Promise<void> => {
         },
         withCredentials: true,
       },
-    )
+    );
+    messageVisible.value = true
+    setTimeout(() => {
+      router.push("/connexion");
+    }, 3000);
     //console.log("Compte créé")
     
   }
-  catch (err)
+  catch (err :any)
   {
     messageVisible.value = false
     errorVisible.value = true
     console.error("Impossible d'envoyer ce post", err)
+    //Vu que j'utilise supabase je met cette condition en cas de spam
+    if(err.response.status === 429){
+        failedMessage.value = "Trop de tentatives. Veuillez patienter"
+    }
   }
 }
 
-function gotoConnexion(){
-    router.push("/connexion")
-  }
 
 </script>
 
@@ -144,9 +149,9 @@ function gotoConnexion(){
           {{ failedMessage }}
           </p>
       </form>
-         <p class="text-sm">Vous avez déjà un compte ? <button @click="gotoConnexion" class="text-purple-700 hover:underline">Connectez-vous</button></p>
+         <p class="text-sm">Vous avez déjà un compte ? <button class="text-purple-700 hover:underline">Connectez-vous</button></p>
 
-         <p class="text-sm"><button @click="gotoConnexion" class="text-purple-700 hover:underline">Politique de confidentialité</button></p>
+         <p class="text-sm"><button class="text-purple-700 hover:underline">Politique de confidentialité</button></p>
 
 
     </div>

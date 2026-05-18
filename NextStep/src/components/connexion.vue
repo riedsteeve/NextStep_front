@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { reactive } from 'vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+const router = useRouter()
+const authStore = useAuthStore()
 
 const Utilisateur = reactive({
   email: '',
@@ -8,12 +13,50 @@ const Utilisateur = reactive({
 });
 
 const messageVisible = ref(false)
-const CreatingAccountMessage = 'Votre a été bien créé, vous allez etre ridirigé vers le formulaire de connexion'
+const ConnexionMessage = 'Connexion réussie'
 const errorVisible = ref(false)
-const failedMessage = "Respecté la longeur du mot de passe prévu"
+const failedMessage = ref("Respecté la longeur du mot de passe prévu")
 
-function submitForm(){
+const URL_CONNEXION = import.meta.env.VITE_CONNEXION_API;
 
+const submitForm = async (): Promise<void> => {
+  try{
+    messageVisible.value = true
+    errorVisible.value = false
+    const response = await axios.post(
+      URL_CONNEXION,{
+        email:Utilisateur.email,
+        password: Utilisateur.password
+      },{
+        headers : {
+          'Content-Type' : 'application/json',
+          Accept: 'application/json',
+        },
+        withCredentials: true,
+      },
+    );
+    //je récupere le token et je l'nrégistre dans Pinia
+    const token = response.data.session.access_token
+    const user = response.data.user
+    //console.log("Le token récupéré avec succès :", token)
+    authStore.setAuth(token, user)
+    console.log(user)
+
+    setTimeout(() => {
+      router.push("/dashboard")
+    }, 3000);
+
+    console.log("Connexion validé")
+  }
+  catch(err :any){
+    messageVisible.value = false
+    errorVisible.value = true
+    console.error("Connexion impossible")
+
+    if(err.response.status === 400){
+        failedMessage.value = "Identifiants incorrects"
+    } 
+  }
 }
 
 </script>
