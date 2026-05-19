@@ -24,11 +24,14 @@ const submitForm = async (): Promise<void> => {
     messageVisible.value = true
     errorVisible.value = false
     const response = await axios.post(
-      URL_CONNEXION,{
+      URL_CONNEXION,
+      {
         email:Utilisateur.email,
         password: Utilisateur.password
-      },{
-        headers : {
+      },
+      {
+        headers : 
+        {
           'Content-Type' : 'application/json',
           Accept: 'application/json',
         },
@@ -36,26 +39,41 @@ const submitForm = async (): Promise<void> => {
       },
     );
     //je récupere le token et je l'nrégistre dans Pinia
-    const token = response.data.session.access_token
+    const token = response.data.token
     const user = response.data.user
-    //console.log("Le token récupéré avec succès :", token)
+    
+    if (token && user) {
+      authStore.setAuth(token, user);
+  
+  setTimeout(() => {
+    router.push("/dashboard");
+  }, 2000);
+} else {
+  // Si l'API a répondu mais qu'il manque des morceaux
+  console.error("Données de connexion incomplètes reçues du serveur.");
+  failedMessage.value = "Erreur technique : réponse du serveur incomplète.";
+  errorVisible.value = true;
+}
+
+    /*
+    console.log("Le token récupéré avec succès :", token)
     authStore.setAuth(token, user)
     console.log(user)
-
-    setTimeout(() => {
-      router.push("/dashboard")
-    }, 3000);
-
+    if (!token) {
+      throw new Error("Le serveur n'a pas renvoyé de jeton de session valide.");
+    }
+    */
     console.log("Connexion validé")
   }
   catch(err :any){
     messageVisible.value = false
     errorVisible.value = true
     console.error("Connexion impossible")
-
+    /*
     if(err.response.status === 400){
         failedMessage.value = "Identifiants incorrects"
     } 
+    */
   }
 }
 
@@ -103,6 +121,18 @@ const submitForm = async (): Promise<void> => {
         >
           Connexion
         </button>
+
+        <p v-if="messageVisible"
+            class="text-sm font-medium text-center p-3 rounded-lg bg-purple-200 text-black"
+          >
+          {{ ConnexionMessage }}
+          </p>
+          <p v-if="errorVisible"
+            class="text-sm font-medium text-center p-3 rounded-lg bg-red-200 text-black"
+          >
+          {{ failedMessage }}
+          </p>
+
       </form>
 
     </div>

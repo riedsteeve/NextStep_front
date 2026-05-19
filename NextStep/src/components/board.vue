@@ -18,6 +18,7 @@ const statusOptions = [
   { value: 'refuse', label: 'Refusé', color: 'bg-rose-500' }
 ]
 
+
 const selectedStatus = ref('')
 
 const isModalOpen = ref(false)
@@ -28,8 +29,12 @@ const messageError =ref('Impossible de poster cette candidature ! veuillez véri
 
 const URL_APPLICATION = import.meta.env.VITE_APPLICATION_API;
 
+
 const submitForm = async (): Promise<void> => {
   try {
+    //je récupere le token si non sans ca pas de post de candidature
+    const token = authStore.token
+
     messageVisible.value = false
     errorVisible.value = false
     const response = await axios.post(
@@ -42,23 +47,34 @@ const submitForm = async (): Promise<void> => {
       {
         headers : {
           'Content-Type': 'application/json',
-          Accept: 'application/json'
+          Accept: 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         withCredentials: true,
       },
     );
     messageVisible.value = true,
-    console.log(response)
-    message.value = 'Candidature bien enrégistré'
+    message.value = "Candidature bien enrégistré !"
+    candidature.company = ''
+    candidature.position = ''
+    candidature.status = ''
+    candidature.notes = ''
+
+    setTimeout(() => {
+      isModalOpen.value = false
+      messageVisible.value = false
+    }, 1500);
+
   }
   catch(err : any){
     messageVisible.value = false
     errorVisible.value = true
 
     console.error("Impossible d'envoyer ce post", err)
+    //console.error(err.response?.data?.message)
   }
-  //isModalOpen.value = false
 }
+
 
 
 </script>
@@ -76,7 +92,7 @@ const submitForm = async (): Promise<void> => {
      duration-300 ease-out hover:-translate-y-1 
      hover:scale-[1.02] hover:shadow-xl active:scale-95"
      @click="isModalOpen = true">
-      <i class="fa-solid fa-circle-plus text-lg"></i>
+      <i class="fa-solid fa-newspaper" style="color: rgb(177, 151, 252);"></i>
       Nouvelle candidature
     </button>
 
@@ -89,8 +105,17 @@ const submitForm = async (): Promise<void> => {
             @click="isModalOpen = false" 
             class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
           >
-            <i class="fa-solid fa-xmark text-lg"></i>
+            <p class="font-bold" style="color: rgb(177, 151, 252);">X</p>
           </button>
+        </div>
+
+        <div class="mb-4">
+          <p v-if="messageVisible" class="text-sm font-medium text-center p-3 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200">
+            {{ message }}
+          </p>
+          <p v-if="errorVisible" class="text-sm font-medium text-center p-3 rounded-xl bg-rose-100 text-rose-800 border border-rose-200">
+            {{ messageError }}
+          </p>
         </div>
 
         <form @submit.prevent="submitForm" class="flex flex-col space-y-2 h-100 justify-between">
@@ -120,7 +145,7 @@ const submitForm = async (): Promise<void> => {
             <label class="block text-sm font-semibold text-slate-700 mb-1">Status</label>
             <select
                 id="status"
-                v-model="selectedStatus"
+                v-model="candidature.status"
                 class="w-full px-4 h-12 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 font-medium outline-none cursor-pointer appearance-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
             >
               <option value="" disabled selected>Choisir un statut</option>
@@ -160,19 +185,23 @@ const submitForm = async (): Promise<void> => {
             >
               Enregistrer
             </button>
-            <p v-if="messageVisible" class="text-sm font-medium text-center p-3 rounded-lg bg-purple-200 text-black">
-              {{ message }}
-            </p>
-            <p v-if="errorVisible" class="text-sm font-medium text-center p-3 rounded-lg bg-red-200 text-black">
-              {{ messageError }}
-            </p>
           </div>
         </form>
 
+
       </div>
     </div>
-
-
   </div>
+
+  
+
 </div>
+
+<div class="flex justify-evenly gap-12 p-8">
+    <div class="w-50 h-30 bg-purple-200 rounded-2xl shadow-sm">jenbvk</div>
+    <div class="w-50 h-30 bg-purple-200 rounded-2xl shadow-sm">jenbvk</div>
+    <div class="w-50 h-30 bg-purple-200 rounded-2xl shadow-sm">jenbvk</div>
+    <div class="w-50 h-30 bg-purple-200 rounded-2xl shadow-sm">jenbvk</div>
+</div>
+
 </template>

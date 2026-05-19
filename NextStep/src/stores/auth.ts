@@ -1,32 +1,59 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { an } from 'vue-router/dist/index-D_VEAp3P.js'
+import { candidatureService } from './services'
+
 
 export const useAuthStore = defineStore('auth',() => {
   //je vérifie si le token n'existe pas déja
   const token = ref<string | null>(localStorage.getItem('user_token'))
 
   const user = ref<any>(JSON.parse(localStorage.getItem('user_data') || 'null'))
+
+  const candidatures = ref<any[]>([])
+
   //Un getter qui renvoie true si le tokrn existe si non false
   const isAuthenticated = computed(() => !!token.value)
 
   //enrégistreme,nt du token
   function setAuth(newToken: string, userData: any) {
-    token.value = newToken
+    //le token étais enrégistreé sous forme d'array mais je force la conversion
+    const cleanToken = typeof newToken === 'string' ? newToken : String(newToken);
+    token.value = cleanToken
     user.value = userData
-    localStorage.setItem('user_token', newToken)
-    localStorage.setItem('user_data', userData)
+    localStorage.setItem('user_token', cleanToken)
+    //idem pour l'objet user
+    if (userData && typeof userData === 'object') {
+    localStorage.setItem('user_data', JSON.stringify(userData));
+  } else {
+    localStorage.setItem('user_data', String(userData));
+  }
+}
+
+
+  //j'appelle le service
+  async function fetchCandidatures() {
+    try{
+      const data = await candidatureService.getAll(token.value)
+      candidatures.value = data
+    }
+    catch (err)
+    {
+      console.error("Erreur lors du chargement coté store:", err)
+      throw err
+    }
   }
 
-  //fonction pour vider le token
+
+  //fonction pour vider le token et on supprime aussi les candidatures si le token a disparu
   function clearToken() {
     token.value = null
     user.value = null
+    candidatures.value = []
     localStorage.removeItem('user_token')
     localStorage.removeItem('user_data')
   }
 
   return{
-    token, user, isAuthenticated, setAuth, clearToken
+    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures
   }
 })
