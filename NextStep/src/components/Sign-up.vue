@@ -27,8 +27,8 @@ const submitForm = async (): Promise<void> => {
     errorVisible.value = false
     const response = await axios.post(
       URL_REGISTER,{
-        nom: Utilisateur.nom,
-        prenom: Utilisateur.prenom,
+        first_name: Utilisateur.nom,
+        last_name: Utilisateur.prenom,
         email: Utilisateur.email,
         password: Utilisateur.password
       },
@@ -44,14 +44,14 @@ const submitForm = async (): Promise<void> => {
     setTimeout(() => {
       router.push("/connexion");
     }, 3000);
-    //console.log("Compte créé")
+    //console.log(response,"Compte créé")
     
   }
   catch (err :any)
   {
     messageVisible.value = false
     errorVisible.value = true
-    console.error("Impossible d'envoyer ce post", err)
+    //console.error("Impossible d'envoyer ce post", err)
     //Vu que j'utilise supabase je met cette condition en cas de spam
     if(err.response.status === 429){
         failedMessage.value = "Trop de tentatives. Veuillez patienter"
@@ -149,7 +149,7 @@ const submitForm = async (): Promise<void> => {
           {{ failedMessage }}
           </p>
       </form>
-         <p class="text-sm">Vous avez déjà un compte ? <button class="text-purple-700 hover:underline">Connectez-vous</button></p>
+         <p class="text-sm">Vous avez déjà un compte ? <button class="text-purple-600 hover:underline">Connectez-vous</button></p>
 
          <p class="text-sm"><button class="text-purple-700 hover:underline">Politique de confidentialité</button></p>
 

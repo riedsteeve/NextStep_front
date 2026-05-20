@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import logo from '@/components/images/NextStep_logo.png'
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
@@ -11,13 +10,11 @@ const menuItems = [
   { to: '/notes', label: 'Notes', icon: 'fa-note-sticky' },
 ]
 
-const handleLogout = async (): Promise<void> => {
-  try {
-    
-  } catch (err) {
-    
-  }
-}
+const handleLogout = () => {
+    authStore.clearToken()
+    router.push("/connexion")
+  } 
+
 </script>
 
 <template>
@@ -30,7 +27,7 @@ const handleLogout = async (): Promise<void> => {
           <i class="fa-solid fa-user text-purple-500"></i>
         </div>
         <p v-if="authStore.user" class="text-white font-medium truncate">
-          Hello, {{ authStore.user.first_name }}
+          Hello, {{ authStore.user.last_name }}
         </p>
         <p v-else class="text-purple-200 text-sm animate-pulse">Chargement...</p>
       </div>
@@ -54,19 +51,21 @@ const handleLogout = async (): Promise<void> => {
         </RouterLink>
       </div>
 
-      <div class="p-4 border-t border-slate-100">
-        <button 
-          @click="handleLogout"
-          type="button"
-          class="flex p-3 w-full bg-purple-700 hover:bg-purple-800 transition-colors duration-200 h-12 justify-start gap-4 items-center rounded-xl shadow-md group text-left"
-        >
-          <div class="flex items-center justify-center h-8 w-8 bg-purple-100 rounded-full border shadow-sm border-purple-300 group-hover:scale-105 transition-transform">
-            <i class="fa-solid fa-outdent" style="color: rgb(177, 151, 252);"></i>          
-          </div>
-          <div class="flex flex-col">
-            <span class="text-white font-bold text-sm">Déconnexion</span>
-          </div>
-        </button>
+      <div class="border-t border-slate-100">
+        <div class="bg-gray-100 p-3 ">
+          <button 
+            @click="handleLogout"
+            type="button"
+            class="flex p-3 w-full bg-purple-700 hover:bg-purple-800 transition-all duration-300 ease-out h-12 justify-start gap-4 items-center rounded-2xl shadow-md group text-left border-purple-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-95"
+          >
+            <div class="flex items-center justify-center h-8 w-8 bg-purple-100 rounded-full border shadow-sm border-purple-300 group-hover:scale-105 transition-transform">
+              <i class="mdi mdi-18px mdi-arrow-left-bold-hexagon-outline" style="color: rgb(177, 151, 252);"></i>          
+            </div>
+            <div class="flex flex-col">
+              <span class="text-white font-bold text-sm">Déconnexion</span>
+            </div>
+          </button>
+        </div>
       </div>
 
     </nav>
@@ -75,7 +74,7 @@ const handleLogout = async (): Promise<void> => {
       
       <div class="w-full bg-white h-20 border-b border-slate-200 px-8 flex items-center flex-shrink-0">
         <div class="relative w-full max-w-md">
-          <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400"></i>
+          <i class="mdi mdi-magnify absolute left-4 top-3.5 text-slate-400"></i>
           <input 
             type="search" 
             placeholder="Recherchez une entreprise, un poste..." 

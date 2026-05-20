@@ -29,7 +29,7 @@ import logo from '@/components/images/NextStep_logo.png'
         </div>
 
         <div class="mt-3 flex flex-col gap-3 sm:flex-row">
-          <RouterLink
+           <RouterLink
             to="/sign"
             class="rounded-md bg-purple-600 px-6 py-3 font-bold text-white transition hover:bg-purple-700"
           >
@@ -38,7 +38,7 @@ import logo from '@/components/images/NextStep_logo.png'
 
           <RouterLink
             to="/connexion"
-            class="rounded-md border border-purple-600 px-6 py-3 font-bold text-purple-700 transition hover:bg-purple-50"
+            class="rounded-md border-2 border-purple-600 px-6 py-3 font-bold text-purple-700 transition hover:bg-purple-50"
           >
             Se connecter
           </RouterLink>

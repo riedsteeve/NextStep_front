@@ -1,17 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
+import introduce from '@/components/introduce.vue'
 import SignUp from '@/components/Sign-up.vue'
 import connexion from '@/components/connexion.vue'
-import introduce from '@/components/introduce.vue'
 import dashbord from '@/components/dashbord.vue'
-import board from '@/components/board.vue'
-import notes from '@/components/notes.vue'
-import { next } from 'vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    
     {
       path: '/',
       name: 'home',
@@ -29,23 +26,23 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
-      component:dashbord,
-      meta: {requiresAuth: true},
+      component: dashbord,
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
-          name: 'dashbord',
-          component: board
+          name: 'dashbord-default',
+          component: () => import('@/components/board.vue') 
         },
         {
-          path: '/board',
+          path: '/board', 
           name: 'board',
-          component: board
+          component: () => import('@/components/board.vue') 
         },
         {
-          path: '/notes',
+          path: '/notes', 
           name: 'notes',
-          component: notes
+          component: () => import('@/components/notes.vue') 
         },
       ]
     }, 
