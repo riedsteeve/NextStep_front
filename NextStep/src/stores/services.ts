@@ -13,5 +13,18 @@ export const candidatureService = {
     }
   });
   return response.data
- }
+ },
+
+async delete(id: number, token: string | null){
+    if (!token) throw new Error("Aucun jeton d'authentification fourni.");
+    await axios.delete(`${URL_APPLICATION}/${id}`,{
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  })
+},
+
+
+
 }

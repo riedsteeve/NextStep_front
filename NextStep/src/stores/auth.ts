@@ -43,6 +43,12 @@ export const useAuthStore = defineStore('auth',() => {
     }
   }
 
+  //La supression
+  async function deleteCandidatures(id:number) {
+    await candidatureService.delete(id, token.value)
+    await fetchCandidatures()
+  }
+
 
   //fonction pour vider le token et on supprime aussi les candidatures si le token a disparu
   function clearToken() {
@@ -54,6 +60,6 @@ export const useAuthStore = defineStore('auth',() => {
   }
 
   return{
-    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures
+    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures
   }
 })

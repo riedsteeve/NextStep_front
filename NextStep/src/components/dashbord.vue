@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { ref } from 'vue';
 
 const authStore = useAuthStore()
 const router = useRouter() 
@@ -14,13 +15,36 @@ const handleLogout = () => {
     authStore.clearToken()
     router.push("/connexion")
   } 
+const isMobileMenuOpen = ref(false)
 
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
+}
 </script>
 
 <template>
   <div class="flex h-screen bg-gray-200 text-slate-800 font-sans overflow-hidden">
   
-    <nav class="w-64 bg-white border-r border-slate-200 shadow-xl flex flex-col h-full flex-shrink-0">
+    <button 
+      v-if="!isMobileMenuOpen"
+      @click="isMobileMenuOpen = !isMobileMenuOpen" 
+      class="md:hidden fixed top-4 left-4 z-50 flex h-12 w-12 items-center justify-center bg-white rounded-xl shadow-md text-purple-700 hover:bg-purple-50 transition-colors"
+    >
+      <i class="mdi mdi-menu text-2xl"></i>
+    </button>
+
+    <div
+      v-if="isMobileMenuOpen"
+      @click="closeMobileMenu"
+      class="md:hidden fixed inset-0 bg-black/40 z-30"
+    ></div>
+
+    <nav
+      :class="[
+        'fixed md:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 shadow-xl flex flex-col h-full flex-shrink-0 transition-transform duration-300 ease-out',
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      ]"
+    >
       
       <div class="flex p-8 w-full bg-purple-700 h-20 justify-start gap-4 items-center">
         <div class="flex items-center justify-center h-10 w-10 bg-purple-100 rounded-full border shadow-2xl border-purple-300">
@@ -43,6 +67,7 @@ const handleLogout = () => {
           v-for="item in menuItems" 
           :key="item.to"
           :to="item.to" 
+          @click="closeMobileMenu"
           class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 hover:bg-purple-100 hover:text-purple-700 transition-colors duration-200"
           active-class="bg-purple-200 text-purple-900 font-semibold"
         >
@@ -70,9 +95,9 @@ const handleLogout = () => {
 
     </nav>
 
-    <div class="flex-1 flex flex-col h-full overflow-hidden">
+      <div class="flex-1 flex flex-col h-full overflow-hidden">
       
-      <div class="w-full bg-white h-20 border-b border-slate-200 px-8 flex items-center flex-shrink-0">
+      <div class="w-full bg-white h-20 border-b border-slate-200 px-4 pl-24 md:px-8 flex items-center flex-shrink-0">
         <div class="relative w-full max-w-md">
           <i class="mdi mdi-magnify absolute left-4 top-3.5 text-slate-400"></i>
           <input 
