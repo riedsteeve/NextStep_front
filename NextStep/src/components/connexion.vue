@@ -15,7 +15,7 @@ const Utilisateur = reactive({
 const messageVisible = ref(false)
 const ConnexionMessage = 'Connexion réussie, vous allez redirigé vers votre espace personnel'
 const errorVisible = ref(false)
-const failedMessage = ref("Respecté la longeur du mot de passe prévu")
+const failedMessage = ref("Identifiants incorrect")
 
 const URL_CONNEXION = import.meta.env.VITE_CONNEXION_API;
 
