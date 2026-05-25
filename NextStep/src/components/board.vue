@@ -129,6 +129,7 @@ const submitForm = async (): Promise<void> => {
     } else {
       await axios.post(URL_APPLICATION, payload, config)
       message.value = "Candidature bien enregistrée !"
+      console.log(payload,URL_APPLICATION)
     }
 
     messageVisible.value = true
@@ -163,7 +164,19 @@ const submitForm = async (): Promise<void> => {
   }
 }
 
-
+//le format de la date pour les candidatures
+const formatApiDate = (dateIso: string) => {
+  if (!dateIso) return 'Date inconnue'
+  
+  const date = new Date(dateIso)
+  
+  return date.toLocaleString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 </script>
 
@@ -340,6 +353,7 @@ const submitForm = async (): Promise<void> => {
         <th class="px-4 py-4 md:px-6 text-[13px] uppercase tracking-[0.15em]">Poste</th>
         <th class="px-4 py-4 md:px-6 text-[13px] uppercase tracking-[0.15em]">Statut</th>
         <th class="px-4 py-4 md:px-6 text-[13px] uppercase tracking-[0.15em]">Notes & Suivi</th>
+        <th class="px-4 py-4 md:px-6 text-[13px] uppercase tracking-[0.15em]">Dates</th>
         <th class="px-4 py-4 md:px-6 text-[13px] uppercase tracking-[0.15em] text-right">Actions</th>
       </tr>
     </thead>
@@ -372,6 +386,15 @@ const submitForm = async (): Promise<void> => {
 
         <td class="px-4 py-4 md:px-6 text-slate-500 text-sm max-w-xs truncate">
           {{ candid.notes || 'Aucune note' }}
+        </td>
+
+        <td class="px-4 py-4 md:px-6 text-slate-500 text-sm max-w-xs truncate">
+          <p v-if="candid.updated_at && candid.updated_at !== candid.created_at">
+            Modifié le : {{ formatApiDate(candid.updated_at) }}
+          </p>
+          <p v-else>
+            Créé le : {{ formatApiDate(candid.created_at) }}
+          </p>
         </td>
 
         

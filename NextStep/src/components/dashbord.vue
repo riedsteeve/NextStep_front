@@ -20,6 +20,16 @@ const isMobileMenuOpen = ref(false)
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
+
+const getDate = () => {
+  return new Date().toLocaleString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
 </script>
 
 <template>
@@ -97,15 +107,8 @@ const closeMobileMenu = () => {
 
       <div class="flex-1 flex flex-col h-full overflow-hidden">
       
-      <div class="w-full bg-white h-20 border-b border-slate-200 px-4 pl-24 md:px-8 flex items-center flex-shrink-0">
-        <div class="relative w-full max-w-md">
-          <i class="mdi mdi-magnify absolute left-4 top-3.5 text-slate-400"></i>
-          <input 
-            type="search" 
-            placeholder="Recherchez une entreprise, un poste..." 
-            class="w-full bg-slate-100 pl-11 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:bg-white border border-transparent focus:border-purple-500 transition-all"
-          >
-        </div>
+      <div class="w-full bg-white h-20 border-b border-slate-200 px-4 pl-24 md:px-8 flex items-center justify-end flex-shrink-0">
+          <p class="font-medium text-slate-600">{{ getDate() }}</p>
       </div>
 
       <main class="flex-1 overflow-y-auto p-8">
