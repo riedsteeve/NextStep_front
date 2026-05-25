@@ -47,7 +47,7 @@ const submitForm = async (): Promise<void> => {
   
       setTimeout(() => {
          router.push("/dashboard");
-        }, 2000);
+        }, 1000);
       } else {
           // Si l'API a répondu mais qu'il manque des morceaux
           //console.error("Données de connexion incomplètes reçues du serveur.");

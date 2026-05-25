@@ -11,6 +11,8 @@ export const useAuthStore = defineStore('auth',() => {
 
   const candidatures = ref<any[]>([])
 
+  const notes = ref<any[]>([])
+
   //Un getter qui renvoie true si le tokrn existe si non false
   const isAuthenticated = computed(() => !!token.value)
 
@@ -49,17 +51,46 @@ export const useAuthStore = defineStore('auth',() => {
     await fetchCandidatures()
   }
 
+  //les notes
+  async function fetchNotes() {
+    try{
+      const data = await candidatureService.getAllNotes(token.value)
+      notes.value = data
+    }
+    catch (err)
+    {
+      console.error("Erreur lors du chargement des notes coté store:", err)
+      throw err
+    }
+  }
+
+  async function addNotes(note: any) {
+    await candidatureService.addNotes(note, token.value)
+    await fetchNotes()
+  }
+
+  async function UpdateNotes(id:number, note: any) {
+    await candidatureService.UpdateNotes(id, note, token.value)
+    await fetchNotes()
+  }
+
+  async function deleteNotes(id:number) {
+    await candidatureService.deleteNotes(id, token.value)
+    await fetchNotes()
+  }
+
 
   //fonction pour vider le token et on supprime aussi les candidatures si le token a disparu
   function clearToken() {
     token.value = null
     user.value = null
     candidatures.value = []
+    notes.value = []
     localStorage.removeItem('user_token')
     localStorage.removeItem('user_data')
   }
 
   return{
-    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures
+    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures, notes, fetchNotes, addNotes, UpdateNotes, deleteNotes
   }
 })

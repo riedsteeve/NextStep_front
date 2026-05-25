@@ -3,6 +3,8 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
+import { useDateFormat } from '@/composables/dateFormat';
+const { formatApiDate } = useDateFormat()
 const authStore = useAuthStore()
 const candidature = reactive({
   company: '',
@@ -129,7 +131,6 @@ const submitForm = async (): Promise<void> => {
     } else {
       await axios.post(URL_APPLICATION, payload, config)
       message.value = "Candidature bien enregistrée !"
-      console.log(payload,URL_APPLICATION)
     }
 
     messageVisible.value = true
@@ -164,19 +165,7 @@ const submitForm = async (): Promise<void> => {
   }
 }
 
-//le format de la date pour les candidatures
-const formatApiDate = (dateIso: string) => {
-  if (!dateIso) return 'Date inconnue'
-  
-  const date = new Date(dateIso)
-  
-  return date.toLocaleString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+
 
 </script>
 

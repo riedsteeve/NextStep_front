@@ -1,27 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useDateFormat } from '@/composables/dateFormat';
+const { formatApiDate } = useDateFormat()
 
 interface Note{
-  id: string,
+  id: number,
   title: string,
   content: string,
   date: string
 }
 
-//Pour charger les notes existente depuis le local storage
-const localNotes = localStorage.getItem('memos')
-const notes = ref<Note[]>(localNotes ? JSON.parse(localNotes) : [])
+const authStore = useAuthStore()
+const notes = computed(() => authStore.notes)
 
-
-//Je sauvegarde les memos dans le local storage
-const saveNotes = () => {
-  localStorage.setItem('memos', JSON.stringify(notes.value))
-}
+//je charge la liste des notes
+onMounted(async () => {
+  try{
+    await authStore.fetchNotes()
+  }catch(error){
+    console.error("Erreur lors du chargement des notes", error)
+  }
+})
 
 //Ajouter une nouvelle note
-const createNewNote = () => {
+const createNewNote = async () => {
   const newNote = {
-    id: crypto.randomUUID(),
     title: '',
     content: '',
     date: new Date().toLocaleDateString('fr-FR', {
@@ -32,29 +36,29 @@ const createNewNote = () => {
     })
   }
 
-  //on ajoute les nouveaux memios en début de liste
-  notes.value.unshift(newNote)
-  saveNotes()
+  await authStore.addNotes(newNote)
 } 
 
 //Mise a jour en temps reel 
-const UpdateNote = (id: string, field:'title' | 'content', event: Event) => {
+const UpdateNote = async (id: number, field:'title' | 'content', event: Event) => {
   const target = event.target as HTMLElement
-  const note = notes.value.find(n => n.id === id)
+  const note = notes.value.find((n: Note) => n.id === id)
   if(note){
-    note[field] = target.innerText
-    saveNotes()
+    const updateNote = {
+      title: note.title,
+      content: note.content,
+      date: note.date,
+      [field]: target.innerText
+    }
+
+    await authStore.UpdateNotes(id, updateNote)
   }
 }
 
 //Supression
-const deleteNotes = (id: string) => {
-  notes.value = notes.value.filter(n => n.id !== id)
-  saveNotes()
+const deleteNotes = async (id: number) => {
+  await authStore.deleteNotes(id)
 }
-
-
-
 </script>
 
 <template>
@@ -112,7 +116,12 @@ const deleteNotes = (id: string) => {
       <div class="mt-4 flex items-center justify-between text-[11px] font-bold text-amber-600 uppercase tracking-wide border-t border-amber-200/60 pt-3">
         <span class="flex items-center gap-1">
           <i class="mdi mdi-clock-outline"></i>
-          {{ note.date }}
+          <p v-if="note.updated_at && note.updated_at !== note.created_at">
+            {{ formatApiDate(note.updated_at) }}
+          </p>
+          <p v-else>
+            {{ formatApiDate(note.created_at) }}
+          </p>
         </span>
         <span class="bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded text-[9px]">Edit</span>
       </div>
