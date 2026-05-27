@@ -149,7 +149,12 @@ const submitForm = async (): Promise<void> => {
           {{ failedMessage }}
           </p>
       </form>
-         <p class="text-sm">Vous avez déjà un compte ? <button class="text-purple-600 hover:underline">Connectez-vous</button></p>
+         <p class="text-sm">
+          Vous avez déjà un compte ?
+          <RouterLink to="/connexion" class="text-purple-600 hover:underline">
+            Connectez-vous
+          </RouterLink>
+        </p>
 
          <p class="text-sm">
           <RouterLink to="/politique-confidentialite" class="text-purple-700 hover:underline">
