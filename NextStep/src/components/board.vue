@@ -27,7 +27,6 @@ const messageVisible = ref(false)
 const message = ref('')
 const errorVisible = ref(false)
 const messageError =ref('Impossible de poster cette candidature ! veuillez vérifier vos différent champs')
-const verifyDelete = ref(false)
 
 
 const URL_APPLICATION = import.meta.env.VITE_APPLICATION_API;

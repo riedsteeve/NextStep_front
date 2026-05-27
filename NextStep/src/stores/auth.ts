@@ -13,6 +13,8 @@ export const useAuthStore = defineStore('auth',() => {
 
   const notes = ref<any[]>([])
 
+  const CompteTuilisateur = ref<any[]>([])
+
   //Un getter qui renvoie true si le tokrn existe si non false
   const isAuthenticated = computed(() => !!token.value)
 
@@ -40,6 +42,7 @@ export const useAuthStore = defineStore('auth',() => {
     }
     catch (err)
     {
+      if (TokenExpired(err)) return
       console.error("Erreur lors du chargement coté store:", err)
       throw err
     }
@@ -47,8 +50,13 @@ export const useAuthStore = defineStore('auth',() => {
 
   //La supression
   async function deleteCandidatures(id:number) {
-    await candidatureService.delete(id, token.value)
-    await fetchCandidatures()
+    try{
+      await candidatureService.delete(id, token.value)
+      await fetchCandidatures()
+    }catch(err){
+      if (TokenExpired(err)) return
+      throw err
+    }
   }
 
   //les notes
@@ -59,24 +67,64 @@ export const useAuthStore = defineStore('auth',() => {
     }
     catch (err)
     {
+      if (TokenExpired(err)) return
       console.error("Erreur lors du chargement des notes coté store:", err)
       throw err
     }
   }
 
   async function addNotes(note: any) {
-    await candidatureService.addNotes(note, token.value)
-    await fetchNotes()
+    try{
+      await candidatureService.addNotes(note, token.value)
+      await fetchNotes()
+    }catch(err){
+      if (TokenExpired(err)) return
+      throw err
+    }
   }
 
   async function UpdateNotes(id:number, note: any) {
-    await candidatureService.UpdateNotes(id, note, token.value)
-    await fetchNotes()
+    try{
+      await candidatureService.UpdateNotes(id, note, token.value)
+      await fetchNotes()
+    }catch(err){
+      if (TokenExpired(err)) return
+      throw err
+    }
   }
 
   async function deleteNotes(id:number) {
-    await candidatureService.deleteNotes(id, token.value)
-    await fetchNotes()
+    try{
+      await candidatureService.deleteNotes(id, token.value)
+      await fetchNotes()
+    }catch(err){
+      if (TokenExpired(err)) return
+      throw err
+    }
+  }
+
+  //Admin
+
+  async function fetchUsers() {
+    try{
+      const data = await candidatureService.getAllUser(token.value)
+      CompteTuilisateur.value = data
+    }
+    catch (err){
+      if (TokenExpired(err)) return
+      console.error("Erreur lors du chargemnt des utilisateurs", err)
+      CompteTuilisateur.value = []
+      throw err
+    }
+  }
+
+  function TokenExpired(err: any) {
+    if(err.response && err.response.status === 401){
+      clearToken()
+      window.location.href = '/connexion'
+      return true
+    }
+    return false
   }
 
 
@@ -86,11 +134,12 @@ export const useAuthStore = defineStore('auth',() => {
     user.value = null
     candidatures.value = []
     notes.value = []
+    CompteTuilisateur.value = []
     localStorage.removeItem('user_token')
     localStorage.removeItem('user_data')
   }
 
   return{
-    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures, notes, fetchNotes, addNotes, UpdateNotes, deleteNotes
+    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures, notes, fetchNotes, addNotes, UpdateNotes, deleteNotes, fetchUsers, CompteTuilisateur
   }
 })

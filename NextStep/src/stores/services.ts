@@ -2,6 +2,7 @@ import axios from "axios";
 
 const URL_APPLICATION = import.meta.env.VITE_APPLICATION_API;
 const URL_MEMO = import.meta.env.VITE_MEMOS_NOTES;
+const URL_ADMIN = import.meta.env.VITE_ADMIN_URL;
 
 export const candidatureService = {
  async getAll(token: string | null){
@@ -75,5 +76,19 @@ async deleteNotes(id: number, token: string | null){
   })
 },
 
+
+//Admin
+async getAllUser(token: string | null){
+  if(!token) throw new Error("Acun jeton de connexion fournis")
+
+    const response = await axios.get(URL_ADMIN,{
+      headers:{
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    })
+    return response.data
+}
+    
 
 }

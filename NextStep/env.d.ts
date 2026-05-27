@@ -3,7 +3,8 @@ interface ImportMetaEnv {
   readonly VITE_URL_REGISTER_API: string;
   readonly VITE_CONNEXION_API: string;
   readonly VITE_APPLICATION_API: string;
-  readonly VITE_MEMOS_NOTES: string
+  readonly VITE_MEMOS_NOTES: string;
+  readonly VITE_ADMIN_URL: string
 }
 
 interface ImportMeta {
