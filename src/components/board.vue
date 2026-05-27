@@ -256,7 +256,7 @@ const submitForm = async (): Promise<void> => {
             <input 
               v-model="candidature.notes"
               type="text" 
-              placeholder="Ex: Entrez une desciption, la date par example" 
+              placeholder="Ex: Entrez une desciption" 
               class="w-full px-4 h-12 py-2 border-2 border-slate-400 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
               required
             />
