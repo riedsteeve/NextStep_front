@@ -6,6 +6,7 @@ import SignUp from '@/components/Sign-up.vue'
 import connexion from '@/components/connexion.vue'
 import dashbord from '@/components/dashbord.vue'
 import admin from '@/components/admin.vue'
+import privacy from '@/components/privacy.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,11 @@ const router = createRouter({
       path: '/connexion',
       name: 'connexion',
       component: connexion,
+    },
+    {
+      path: '/politique-confidentialite',
+      name: 'politique-confidentialite',
+      component: privacy,
     },
     {
       path: '/admin',

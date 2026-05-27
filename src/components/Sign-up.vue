@@ -151,7 +151,11 @@ const submitForm = async (): Promise<void> => {
       </form>
          <p class="text-sm">Vous avez déjà un compte ? <button class="text-purple-600 hover:underline">Connectez-vous</button></p>
 
-         <p class="text-sm"><button class="text-purple-700 hover:underline">Politique de confidentialité</button></p>
+         <p class="text-sm">
+          <RouterLink to="/politique-confidentialite" class="text-purple-700 hover:underline">
+            Politique de confidentialité
+          </RouterLink>
+        </p>
 
 
     </div>
