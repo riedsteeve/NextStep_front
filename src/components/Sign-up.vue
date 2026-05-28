@@ -63,23 +63,26 @@ const submitForm = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center  bg-gray-200  pb-10 p-5">
+  <div class="min-h-screen flex items-center justify-center bg-gray-200 px-4 py-8 sm:px-6">
 
-    <div class="w-full max-w-xl p-6 bg-white shadow-xl text-black rounded-md flex flex-col items-center text-center">
+    <div class="w-full max-w-xl bg-white shadow-xl text-black rounded-xl flex flex-col items-center text-center p-5 sm:p-6">
       
       
 
       <ul class="flex flex-wrap justify-center gap-2">
-        <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">100% gratuit</li>
-        <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">Sécurisé</li>
-        <li class="px-4 py-1 bg-purple-500 text-white rounded-full text-sm">Sans publicité</li>
+        <li class="px-3 py-1 bg-purple-500 text-white rounded-full text-xs font-medium sm:px-4 sm:text-sm">100% gratuit</li>
+        <li class="px-3 py-1 bg-purple-500 text-white rounded-full text-xs font-medium sm:px-4 sm:text-sm">Sécurisé</li>
+        <li class="px-3 py-1 bg-purple-500 text-white rounded-full text-xs font-medium sm:px-4 sm:text-sm">Sans publicité</li>
       </ul>
 
       <form
         @submit.prevent="submitForm"
-        class="w-full bg-white p-8 rounded-xl  flex flex-col gap-4 m-2"
+        class="w-full bg-white py-6 rounded-xl flex flex-col gap-5 sm:px-4"
       >
-        <h2 class="text-2xl font-bold text-center text-gray-800">Crée votre compte</h2>
+        <div class="flex flex-col gap-2">
+          <h2 class="text-2xl font-bold text-center text-gray-800">Créer votre compte</h2>
+          <p class="text-sm text-gray-500">Suivez vos candidatures depuis un espace personnel.</p>
+        </div>
 
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
@@ -90,7 +93,7 @@ const submitForm = async (): Promise<void> => {
                 v-model="Utilisateur.nom"
                 placeholder="Entrez votre nom"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
 
@@ -102,7 +105,7 @@ const submitForm = async (): Promise<void> => {
                 v-model="Utilisateur.prenom"
                 placeholder="Entrez votre prénom"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
 
@@ -114,26 +117,26 @@ const submitForm = async (): Promise<void> => {
                 v-model="Utilisateur.email"
                 placeholder="Entrez votre email"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label for="password" class="text-sm font-medium text-gray-700 text-left">Mot de passe(Minimun 6 caractère)</label>
+            <label for="password" class="text-sm font-medium text-gray-700 text-left">Mot de passe <span class="text-gray-400">(minimum 6 caractères)</span></label>
             <input
                 type="password"
                 id="password"
                 v-model="Utilisateur.password"
                 placeholder="********"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
         </div>
 
         <button
           type="submit"
-          class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition font-bold mt-2"
+          class="w-full bg-purple-600 text-white min-h-12 px-4 rounded-lg hover:bg-purple-700 transition font-bold mt-2 active:scale-95"
         >
           Envoyer
         </button>
@@ -149,14 +152,14 @@ const submitForm = async (): Promise<void> => {
           {{ failedMessage }}
           </p>
       </form>
-         <p class="text-sm">
+         <p class="text-sm leading-6">
           Vous avez déjà un compte ?
           <RouterLink to="/connexion" class="text-purple-600 hover:underline">
             Connectez-vous
           </RouterLink>
         </p>
 
-         <p class="text-sm">
+         <p class="text-sm leading-6">
           <RouterLink to="/politique-confidentialite" class="text-purple-700 hover:underline">
             Politique de confidentialité
           </RouterLink>

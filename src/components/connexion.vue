@@ -80,25 +80,28 @@ const submitForm = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center pt-35 bg-gray-200 gap-8 pb-10 p-5">
+  <div class="min-h-screen flex items-center justify-center bg-gray-200 px-4 py-8 sm:px-6">
 
-    <div class="w-full max-w-xl p-6 bg-white shadow-xl text-black rounded-md flex flex-col items-center text-center">
+    <div class="w-full max-w-md bg-white shadow-xl text-black rounded-xl flex flex-col items-center text-center">
       <form
         @submit.prevent="submitForm"
-        class="w-full bg-white p-8 rounded-xl flex flex-col gap-4 m-2"
+        class="w-full bg-white p-5 rounded-xl flex flex-col gap-5 sm:p-8"
       >
-        <h2 class="text-2xl font-bold text-center text-purple-600">Connexion</h2>
+        <div class="flex flex-col gap-2">
+          <h2 class="text-2xl font-bold text-center text-purple-600">Connexion</h2>
+          <p class="text-sm text-gray-500">Accédez à votre espace NextStep.</p>
+        </div>
 
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
-            <label for="prenom" class="text-sm font-medium text-gray-700 text-left">Email</label>
+            <label for="email" class="text-sm font-medium text-gray-700 text-left">Email</label>
             <input
-                type="text"
-                id="prenom"
+                type="email"
+                id="email"
                 v-model="Utilisateur.email"
                 placeholder="Entrez votre email"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
 
@@ -110,14 +113,14 @@ const submitForm = async (): Promise<void> => {
                 v-model="Utilisateur.password"
                 placeholder="********"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm text-black"
+                class="w-full min-h-12 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition duration-150 shadow-sm text-black"
               />
           </div>
         </div>
 
         <button
           type="submit"
-          class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition font-bold mt-2"
+          class="w-full bg-purple-600 text-white min-h-12 px-4 rounded-lg hover:bg-purple-700 transition font-bold mt-2 active:scale-95"
         >
           Connexion
         </button>
