@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue';
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { ref } from 'vue'
 
 const authStore = useAuthStore()
-const router = useRouter() 
+const router = useRouter()
 
 const menuItems = [
   { to: '/board', label: 'Tableau de bord', icon: 'fa-house' },
@@ -12,9 +12,9 @@ const menuItems = [
 ]
 
 const handleLogout = () => {
-    authStore.clearToken()
-    router.push("/connexion")
-  } 
+  authStore.clearToken()
+  router.push('/connexion')
+}
 const isMobileMenuOpen = ref(false)
 
 const closeMobileMenu = () => {
@@ -26,19 +26,17 @@ const getDate = () => {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
-
 </script>
 
 <template>
-  <div class="flex h-screen bg-gray-200 text-slate-800 font-sans overflow-hidden">
-  
-    <button 
+  <div class="flex h-screen overflow-hidden bg-gray-200 font-sans text-slate-800">
+    <button
       v-if="!isMobileMenuOpen"
-      @click="isMobileMenuOpen = !isMobileMenuOpen" 
-      class="md:hidden fixed top-4 left-4 z-50 flex h-12 w-12 items-center justify-center bg-white rounded-xl shadow-md text-purple-700 hover:bg-purple-50 transition-colors"
+      @click="isMobileMenuOpen = !isMobileMenuOpen"
+      class="fixed top-4 left-4 z-50 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-purple-700 shadow-md transition-colors hover:bg-purple-50 md:hidden"
     >
       <i class="mdi mdi-menu text-2xl"></i>
     </button>
@@ -46,76 +44,86 @@ const getDate = () => {
     <div
       v-if="isMobileMenuOpen"
       @click="closeMobileMenu"
-      class="md:hidden fixed inset-0 bg-black/40 z-30"
+      class="fixed inset-0 z-30 bg-black/40 md:hidden"
     ></div>
 
     <nav
       :class="[
-        'fixed md:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 shadow-xl flex flex-col h-full flex-shrink-0 transition-transform duration-300 ease-out',
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        'fixed inset-y-0 left-0 z-40 flex h-full w-64 flex-shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 ease-out md:static',
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
       ]"
     >
-      
-      <div class="flex p-8 w-full bg-purple-700 h-20 justify-start gap-4 items-center">
-        <div class="flex items-center justify-center h-10 w-10 bg-purple-100 rounded-full border shadow-2xl border-purple-300">
+      <div class="flex h-20 w-full items-center justify-start gap-4 bg-purple-700 p-8">
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-purple-300 bg-purple-100 shadow-2xl"
+        >
           <i class="fa-solid fa-user text-purple-500"></i>
         </div>
-        <p v-if="authStore.user" class="text-white font-medium truncate">
+        <p v-if="authStore.user" class="truncate font-medium text-white">
           Hello, {{ authStore.user.last_name }}
         </p>
-        <p v-else class="text-purple-200 text-sm animate-pulse">Chargement...</p>
+        <p v-else class="animate-pulse text-sm text-purple-200">Chargement...</p>
       </div>
 
       <div class="p-6 text-center">
-        <h2 class="text-gray-400 font-black text-[13px] uppercase tracking-wider mt-2">
+        <h2 class="mt-2 text-[13px] font-black tracking-wider text-gray-400 uppercase">
           Menu principal
         </h2>
       </div>
 
-      <div class="px-4 space-y-2 flex-1">
-        <RouterLink 
-          v-for="item in menuItems" 
+      <div class="flex-1 space-y-2 px-4">
+        <RouterLink
+          v-for="item in menuItems"
           :key="item.to"
-          :to="item.to" 
+          :to="item.to"
           @click="closeMobileMenu"
-          class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 hover:bg-purple-100 hover:text-purple-700 transition-colors duration-200"
+          class="flex items-center gap-4 rounded-xl px-4 py-3 text-slate-600 transition-colors duration-200 hover:bg-purple-100 hover:text-purple-700"
           active-class="bg-purple-200 text-purple-900 font-semibold"
         >
-          <i class="fa-solid text-lg w-5 text-center" :class="item.icon"></i>
+          <i class="fa-solid w-5 text-center text-lg" :class="item.icon"></i>
           <span>{{ item.label }}</span>
         </RouterLink>
       </div>
 
+      <div class="flex justify-center p-4">
+        <p class="text-xs leading-tight font-medium text-purple-800">
+          Mises à jour régulières de l'appli...
+        </p>
+      </div>
+
       <div class="border-t border-slate-100">
-        <div class="bg-gray-100 p-3 ">
-          <button 
+        <div class="bg-gray-100 p-3">
+          <button
             @click="handleLogout"
             type="button"
-            class="flex p-3 w-full bg-purple-700 hover:bg-purple-800 transition-all duration-300 ease-out h-12 justify-start gap-4 items-center rounded-2xl shadow-md group text-left border-purple-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-95"
+            class="group flex h-12 w-full items-center justify-start gap-4 rounded-2xl border-purple-300 bg-purple-700 p-3 text-left shadow-md transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:bg-purple-800 hover:shadow-xl active:scale-95"
           >
-            <div class="flex items-center justify-center h-8 w-8 bg-purple-100 rounded-full border shadow-sm border-purple-300 group-hover:scale-105 transition-transform">
-              <i class="mdi mdi-18px mdi-arrow-left-bold-hexagon-outline" style="color: rgb(177, 151, 252);"></i>          
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-full border border-purple-300 bg-purple-100 shadow-sm transition-transform group-hover:scale-105"
+            >
+              <i
+                class="mdi mdi-18px mdi-arrow-left-bold-hexagon-outline"
+                style="color: rgb(177, 151, 252)"
+              ></i>
             </div>
             <div class="flex flex-col">
-              <span class="text-white font-bold text-sm">Déconnexion</span>
+              <span class="text-sm font-bold text-white">Déconnexion</span>
             </div>
           </button>
         </div>
       </div>
-
     </nav>
 
-      <div class="flex-1 flex flex-col h-full overflow-hidden">
-      
-      <div class="w-full bg-white h-20 border-b border-slate-200 px-4 pl-24 md:px-8 flex items-center justify-end flex-shrink-0">
-          <p class="font-medium text-slate-600">{{ getDate() }}</p>
+    <div class="flex h-full flex-1 flex-col overflow-hidden">
+      <div
+        class="flex h-20 w-full flex-shrink-0 items-center justify-end border-b border-slate-200 bg-white px-4 pl-24 md:px-8"
+      >
+        <p class="font-medium text-slate-600">{{ getDate() }}</p>
       </div>
 
       <main class="flex-1 overflow-y-auto p-8">
         <RouterView />
       </main>
-
     </div>
-
   </div>
 </template>
