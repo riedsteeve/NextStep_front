@@ -11,6 +11,7 @@ const Utilisateur = reactive({
   email: '',
   password: '',
 })
+const isLoading = ref(false)
 
 const messageVisible = ref(false)
 const ConnexionMessage = 'Connexion réussie, vous allez redirigé vers votre espace personnel'
@@ -120,9 +121,10 @@ const submitForm = async (): Promise<void> => {
 
         <button
           type="submit"
-          class="mt-2 min-h-12 w-full rounded-lg bg-purple-600 px-4 font-bold text-white transition hover:bg-purple-700 active:scale-95"
+          class="mt-2 min-h-12 w-full rounded-lg bg-purple-600 px-4 font-bold text-white transition hover:bg-purple-700 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+          :disabled="isLoading"
         >
-          Connexion
+          {{ isLoading ? 'Connexion en cours' : 'Connexion' }}
         </button>
 
         <p
