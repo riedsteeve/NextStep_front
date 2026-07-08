@@ -140,7 +140,7 @@ const submitForm = async (): Promise<void> => {
     setTimeout(() => {
       isModalOpen.value = false
       messageVisible.value = false
-    }, 1500)
+    })
   } catch (err: any) {
     messageVisible.value = false
     errorVisible.value = true
@@ -151,7 +151,7 @@ const submitForm = async (): Promise<void> => {
         isModalOpen.value = false
         messageVisible.value = false
         alert((message.value = 'votre session a expiré'))
-      }, 1500)
+      })
       router.push('/connexion')
       return
     }
