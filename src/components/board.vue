@@ -375,6 +375,8 @@ const submitForm = async (): Promise<void> => {
                   'bg-emerald-100 text-emerald-800': candid.status === 'accepte',
                   'bg-amber-100 text-amber-800': candid.status === 'en_cours',
                   'bg-rose-100 text-rose-800': candid.status === 'refuse',
+                  'bg-purple-100 text-purple-800': candid.status === 'relance',
+                  'bg-green-100 text-green-800': candid.status === 'entretien',
                 }"
               >
                 {{ candid.status }}
