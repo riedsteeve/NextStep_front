@@ -16,6 +16,8 @@ const candidature = reactive({
 const statusOptions = [
   { value: 'en_cours', label: 'En cours', color: 'bg-amber-500' },
   { value: 'accepte', label: 'Accepté', color: 'bg-emerald-500' },
+  { value: 'relance', label: 'Relancé', color: 'bg-purple-500' },
+  { value: 'entretien', label: 'Entretien', color: 'bg-green-500' },
   { value: 'refuse', label: 'Refusé', color: 'bg-rose-500' },
 ]
 
