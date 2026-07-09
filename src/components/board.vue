@@ -4,7 +4,6 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import { useDateFormat } from '@/composables/dateFormat'
-import validator from 'validator'
 
 const { formatApiDate } = useDateFormat()
 const authStore = useAuthStore()
