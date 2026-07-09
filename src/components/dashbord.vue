@@ -85,10 +85,16 @@ const getDate = () => {
         </RouterLink>
       </div>
 
-      <div class="flex justify-center p-4">
-        <p class="text-xs leading-tight font-medium text-purple-800">
-          Mises à jour régulières de l'appli...
-        </p>
+      <div class="flex flex-col items-center p-4 text-center">
+        <span class="mb-1 text-xs font-semibold tracking-wider text-purple-800 uppercase">
+          - Nouvelle mise à jour -
+        </span>
+        <br>
+        <ul class="list-inside list-disc text-xs leading-tight font-medium text-purple-800">
+          <li>
+            Champ contact pour renseigner le contact et le type de contact assigné à la candidature.
+          </li>
+        </ul>
       </div>
 
       <div class="border-t border-slate-100">

@@ -4,12 +4,16 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import { useDateFormat } from '@/composables/dateFormat'
+import validator from 'validator'
+
 const { formatApiDate } = useDateFormat()
 const authStore = useAuthStore()
 const candidature = reactive({
   company: '',
   position: '',
   status: '',
+  type_contact: '',
+  contact: '',
   notes: '',
 })
 
@@ -19,6 +23,12 @@ const statusOptions = [
   { value: 'relance', label: 'Relancé', color: 'bg-purple-500' },
   { value: 'entretien', label: 'Entretien', color: 'bg-green-500' },
   { value: 'refuse', label: 'Refusé', color: 'bg-rose-500' },
+]
+
+const contactOptions = [
+  { value: 'mail', label: 'Email' },
+  { value: 'numero', label: 'Numéro' },
+  { value: 'linkedin', label: 'Linkedin' },
 ]
 
 const isModalOpen = ref(false)
@@ -59,11 +69,21 @@ const totalRefuse = computed(() => {
 const totalAccepte = computed(() => {
   return authStore.candidatures.filter((c) => c.status === 'accepte').length
 })
+//les entretiens
+const totalEntretiens = computed(() => {
+  return authStore.candidatures.filter((c) => c.status === 'entretien').length
+})
+//les relances
+const totalrelances = computed(() => {
+  return authStore.candidatures.filter((c) => c.status === 'relance').length
+})
 
 const resetForm = () => {
   candidature.company = ''
   candidature.position = ''
   candidature.status = ''
+  candidature.type_contact = ''
+  candidature.contact = ''
   candidature.notes = ''
   selectedCandidatureId.value = null
 }
@@ -82,6 +102,8 @@ const openEditModal = (candid: any) => {
   candidature.company = candid.company
   candidature.position = candid.position
   candidature.status = candid.status
+  candidature.type_contact = candid.type_contact
+  candidature.contact = candid.contact
   candidature.notes = candid.notes || ''
   messageVisible.value = false
   errorVisible.value = false
@@ -113,6 +135,8 @@ const submitForm = async (): Promise<void> => {
       company: candidature.company,
       position: candidature.position,
       status: candidature.status,
+      type_contact: candidature.type_contact,
+      contact: candidature.contact,
       notes: candidature.notes,
     }
 
@@ -161,6 +185,34 @@ const submitForm = async (): Promise<void> => {
     console.error("Impossible d'envoyer ce post", err)
     //console.error(err.response?.data?.message)
   }
+}
+
+const getContactLink = (text: string, typContact: string) => {
+  if (!text) return ''
+
+  switch (typContact) {
+    case 'mail':
+      return `mailto:${text}`
+
+    case 'numero':
+      return `tel:${text}`
+
+    case 'linkedin':
+      return text.startsWith('http') ? text : `https://${text}`
+
+    default:
+      return ''
+  }
+
+  //je vais plutot faire un mailto c'est mieux
+  /*
+  try {
+    await navigator.clipboard.writeText(text)
+    //console.log('Text bien copié')
+  } catch (ex) {
+    //console.error('Erreur lors de la copie', ex)
+  }
+    */
 }
 </script>
 
@@ -257,6 +309,34 @@ const submitForm = async (): Promise<void> => {
             </div>
 
             <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-700">Type de contact</label>
+              <select
+                id="status"
+                v-model="candidature.type_contact"
+                class="h-12 w-full cursor-pointer appearance-none rounded border-2 border-slate-400 bg-white px-4 py-2 font-medium text-slate-700 transition-all outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+              >
+                <option value="" disabled>Choix du type de contact</option>
+
+                <option v-for="option in contactOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-700"
+                >Contact(Numéro / mail)</label
+              >
+              <input
+                v-model="candidature.contact"
+                type="text"
+                placeholder="Someone@gmail.com / +33 00 00 00 00 00"
+                class="h-12 w-full rounded border-2 border-slate-400 px-4 py-2 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
               <label class="mb-2 block text-sm font-semibold text-slate-700">Notes</label>
               <textarea
                 v-model="candidature.notes"
@@ -289,18 +369,18 @@ const submitForm = async (): Promise<void> => {
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:p-8 xl:grid-cols-4">
-    <p v-if="errorVisible">
+  <div v-if="errorVisible" class="mb-4 p-2 md:px-8">
+    <p class="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-600">
       {{ message }}
     </p>
+  </div>
 
+  <div class="grid grid-cols-1 gap-4 p-2 sm:grid-cols-2 md:p-8 lg:grid-cols-3 xl:grid-cols-6">
     <div
       class="group relative flex h-32 flex-col justify-between overflow-hidden rounded-2xl border-2 border-purple-300 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
     >
       <div class="flex items-center justify-between">
-        <h2 class="text-sm font-black tracking-wide text-purple-900 uppercase">
-          Total Candidatures
-        </h2>
+        <h2 class="text-sm font-black tracking-wide text-purple-900 uppercase">T. Candidatu...</h2>
         <i class="mdi mdi-view-grid text-2xl text-purple-400"></i>
       </div>
       <p class="text-4xl font-black text-purple-700">{{ totalCandidatures }}</p>
@@ -327,6 +407,16 @@ const submitForm = async (): Promise<void> => {
     </div>
 
     <div
+      class="group relative flex h-32 flex-col justify-between overflow-hidden rounded-2xl border-2 border-blue-300 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-black tracking-wide text-blue-600 uppercase">Entretiens</h2>
+        <i class="mdi mdi-calendar-clock text-2xl text-blue-400"></i>
+      </div>
+      <p class="text-4xl font-black text-blue-500">{{ totalEntretiens }}</p>
+    </div>
+
+    <div
       class="group relative flex h-32 flex-col justify-between overflow-hidden rounded-2xl border-2 border-emerald-300 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
     >
       <div class="flex items-center justify-between">
@@ -334,6 +424,16 @@ const submitForm = async (): Promise<void> => {
         <i class="mdi mdi-check-circle-outline text-2xl text-emerald-400"></i>
       </div>
       <p class="text-4xl font-black text-emerald-500">{{ totalAccepte }}</p>
+    </div>
+
+    <div
+      class="group relative flex h-32 flex-col justify-between overflow-hidden rounded-2xl border-2 border-indigo-300 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-black tracking-wide text-indigo-600 uppercase">Relance</h2>
+        <i class="mdi mdi-bell-ring-outline text-2xl text-indigo-400"></i>
+      </div>
+      <p class="text-4xl font-black text-indigo-500">{{ totalrelances }}</p>
     </div>
   </div>
 
@@ -346,7 +446,10 @@ const submitForm = async (): Promise<void> => {
             <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Entreprise</th>
             <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Poste</th>
             <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Statut</th>
-            <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Notes & Suivi</th>
+            <th class="px-4 py-4 text-center text-[13px] tracking-[0.15em] uppercase md:px-6">
+              Notes & Suivi
+            </th>
+            <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Contact</th>
             <th class="px-4 py-4 text-[13px] tracking-[0.15em] uppercase md:px-6">Dates</th>
             <th class="px-4 py-4 text-right text-[13px] tracking-[0.15em] uppercase md:px-6">
               Actions
@@ -383,8 +486,23 @@ const submitForm = async (): Promise<void> => {
               </span>
             </td>
 
-            <td class="max-w-xs truncate px-4 py-4 text-sm text-slate-500 md:px-6">
+            <td class="max-w-xs truncate px-4 py-4 text-center text-sm text-slate-500 md:px-6">
               {{ candid.notes || 'Aucune note' }}
+            </td>
+
+            <td class="max-w-xs cursor-pointer truncate px-4 py-4 text-sm text-slate-500 md:px-6">
+              <a
+                v-if="candid.contact"
+                :href="getContactLink(candid.contact, candid.type_contact)"
+                :target="candid.type_contact === 'linkedin' ? '_blank' : '_self'"
+                class="flex cursor-pointer items-center gap-1 hover:text-purple-600 hover:underline"
+              >
+                <i v-if="candid.type_contact === 'mail'" class="mdi mdi-email-outline"></i>
+                <i v-else-if="candid.type_contact === 'numero'" class="mdi mdi-phone"></i>
+                <i v-else-if="candid.type_contact === 'linkedin'" class="mdi mdi-linkedin"></i>
+                {{ candid.contact }}
+              </a>
+              <span v-else class="text-slate-400">Aucun contact</span>
             </td>
 
             <td class="max-w-xs truncate px-4 py-4 text-sm text-slate-500 md:px-6">
