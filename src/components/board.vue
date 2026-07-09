@@ -332,7 +332,6 @@ const getContactLink = (text: string, typContact: string) => {
                 type="text"
                 placeholder="Someone@gmail.com / +33 00 00 00 00 00"
                 class="h-12 w-full rounded border-2 border-slate-400 px-4 py-2 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
-                required
               />
             </div>
 
@@ -479,7 +478,7 @@ const getContactLink = (text: string, typContact: string) => {
                   'bg-amber-100 text-amber-800': candid.status === 'en_cours',
                   'bg-rose-100 text-rose-800': candid.status === 'refuse',
                   'bg-purple-100 text-purple-800': candid.status === 'relance',
-                  'bg-green-100 text-green-800': candid.status === 'entretien',
+                  'bg-blue-100 text-blue-800': candid.status === 'entretien',
                 }"
               >
                 {{ candid.status }}
