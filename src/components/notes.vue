@@ -5,12 +5,81 @@ import { useDateFormat } from '@/composables/dateFormat'
 const { formatApiDate } = useDateFormat()
 
 const authStore = useAuthStore()
+
+// Système de couleurs prédéfinies avec IDs
+const colorPalette = [
+  { id: 'red', bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-900', label: 'Rouge' },
+  {
+    id: 'blue',
+    bg: 'bg-blue-100',
+    border: 'border-blue-300',
+    text: 'text-blue-900',
+    label: 'Bleu',
+  },
+  {
+    id: 'green',
+    bg: 'bg-green-100',
+    border: 'border-green-300',
+    text: 'text-green-900',
+    label: 'Vert',
+  },
+  {
+    id: 'purple',
+    bg: 'bg-purple-100',
+    border: 'border-purple-300',
+    text: 'text-purple-900',
+    label: 'Violet',
+  },
+  {
+    id: 'yellow',
+    bg: 'bg-yellow-100',
+    border: 'border-yellow-300',
+    text: 'text-yellow-900',
+    label: 'Jaune',
+  },
+  {
+    id: 'pink',
+    bg: 'bg-pink-100',
+    border: 'border-pink-300',
+    text: 'text-pink-900',
+    label: 'Rose',
+  },
+  {
+    id: 'indigo',
+    bg: 'bg-indigo-100',
+    border: 'border-indigo-300',
+    text: 'text-indigo-900',
+    label: 'Indigo',
+  },
+  {
+    id: 'cyan',
+    bg: 'bg-cyan-100',
+    border: 'border-cyan-300',
+    text: 'text-cyan-900',
+    label: 'Cyan',
+  },
+]
+
 const notes = computed(() =>
   authStore.notes.map((note: any) => ({
     ...note,
-    color: note.color || getRandomColors(),
+    colorObj: getColorObj(note.color),
   })),
 )
+
+// Récupère l'objet couleur à partir de l'ID ou génère une nouvelle
+function getColorObj(colorId?: string) {
+  if (colorId) {
+    return colorPalette.find((c) => c.id === colorId) || colorPalette[0]
+  }
+  return colorPalette[0] // Couleur par défaut
+}
+
+// Génère un ID de couleur aléatoire
+function getRandomColorId(): string {
+  const randomColor = colorPalette[Math.floor(Math.random() * colorPalette.length)]
+  return randomColor?.id || 'red'
+}
 
 //je charge la liste des notes
 onMounted(async () => {
@@ -32,7 +101,7 @@ const createNewNote = async () => {
       hour: '2-digit',
       minute: '2-digit',
     }),
-    color: getRandomColors(),
+    color: getRandomColorId(),
   }
 
   await authStore.addNotes(newNote)
@@ -58,34 +127,6 @@ const UpdateNote = async (id: number, field: 'title' | 'content', event: Event) 
 //Supression
 const deleteNotes = async (id: number) => {
   await authStore.deleteNotes(id)
-}
-
-const colors = [
-  {
-    bg: 'bg-red-100',
-    border: 'border-red-300',
-    text: 'text-red-900',
-  },
-  {
-    bg: 'bg-blue-100',
-    border: 'border-blue-300',
-    text: 'text-blue-900',
-  },
-  {
-    bg: 'bg-green-100',
-    border: 'border-green-300',
-    text: 'text-green-900',
-  },
-  {
-    bg: 'bg-purple-100',
-    border: 'border-purple-300',
-    text: 'text-purple-900',
-  },
-]
-
-function getRandomColors() {
-  const index = Math.floor(Math.random() * colors.length)
-  return colors[index]
 }
 </script>
 
@@ -117,9 +158,9 @@ function getRandomColors() {
         :key="note.id"
         :class="[
           'group relative flex min-h-50 flex-col justify-between rounded-2xl border p-5 shadow-sm',
-          note.color.bg,
-          note.color.border,
-          note.color.text,
+          note.colorObj.bg,
+          note.colorObj.border,
+          note.colorObj.text,
         ]"
       >
         <div>
