@@ -87,9 +87,9 @@ const getDate = () => {
 
       <div class="flex flex-col items-center p-4 text-center">
         <span class="mb-1 text-xs font-semibold tracking-wider text-purple-800 uppercase">
-          - Nouvelle mise à jour -
+          - Nouvelles mise à jour -
         </span>
-        <br>
+        <br />
         <ul class="list-inside list-disc text-xs leading-tight font-medium text-purple-800">
           <li>
             Champ contact pour renseigner le contact et le type de contact assigné à la candidature.
