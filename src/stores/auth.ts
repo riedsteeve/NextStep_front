@@ -2,10 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { candidatureService } from './services'
 
-
-export const useAuthStore = defineStore('auth',() => {
-  //je vérifie si le token n'existe pas déja
-  const token = ref<string | null>(localStorage.getItem('user_token'))
+export const useAuthStore = defineStore('auth', () => {
+  const token = ref<string | null>(sessionStorage.getItem('user_token'))
 
   const user = ref<any>(JSON.parse(localStorage.getItem('user_data') || 'null'))
 
@@ -15,45 +13,48 @@ export const useAuthStore = defineStore('auth',() => {
 
   const CompteTuilisateur = ref<any[]>([])
 
-  //Un getter qui renvoie true si le tokrn existe si non false
   const isAuthenticated = computed(() => !!token.value)
 
-  //enrégistreme,nt du token
   function setAuth(newToken: string, userData: any) {
-    //le token étais enrégistreé sous forme d'array mais je force la conversion
-    const cleanToken = typeof newToken === 'string' ? newToken : String(newToken);
-    token.value = cleanToken
-    user.value = userData
-    localStorage.setItem('user_token', cleanToken)
-    //idem pour l'objet user
-    if (userData && typeof userData === 'object') {
-    localStorage.setItem('user_data', JSON.stringify(userData));
-  } else {
-    localStorage.setItem('user_data', String(userData));
-  }
-}
+    if (!newToken || typeof newToken !== 'string') {
+      console.error('Token invalide')
+      return
+    }
 
+    token.value = newToken
+    sessionStorage.setItem('user_token', newToken)
+
+    if (userData && typeof userData === 'object') {
+      user.value = userData
+      const safeUserData = {
+        id: userData.id,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        email: userData.email,
+        role: userData.role,
+      }
+      localStorage.setItem('user_data', JSON.stringify(safeUserData))
+    }
+  }
 
   //j'appelle le service
   async function fetchCandidatures() {
-    try{
+    try {
       const data = await candidatureService.getAll(token.value)
       candidatures.value = data
-    }
-    catch (err)
-    {
+    } catch (err) {
       if (TokenExpired(err)) return
-      console.error("Erreur lors du chargement coté store:", err)
+      console.error('Erreur lors du chargement coté store:', err)
       throw err
     }
   }
 
   //La supression
-  async function deleteCandidatures(id:number) {
-    try{
+  async function deleteCandidatures(id: number) {
+    try {
       await candidatureService.delete(id, token.value)
       await fetchCandidatures()
-    }catch(err){
+    } catch (err) {
       if (TokenExpired(err)) return
       throw err
     }
@@ -61,43 +62,41 @@ export const useAuthStore = defineStore('auth',() => {
 
   //les notes
   async function fetchNotes() {
-    try{
+    try {
       const data = await candidatureService.getAllNotes(token.value)
       notes.value = data
-    }
-    catch (err)
-    {
+    } catch (err) {
       if (TokenExpired(err)) return
-      console.error("Erreur lors du chargement des notes coté store:", err)
+      console.error('Erreur lors du chargement des notes coté store:', err)
       throw err
     }
   }
 
   async function addNotes(note: any) {
-    try{
+    try {
       await candidatureService.addNotes(note, token.value)
       await fetchNotes()
-    }catch(err){
+    } catch (err) {
       if (TokenExpired(err)) return
       throw err
     }
   }
 
-  async function UpdateNotes(id:number, note: any) {
-    try{
+  async function UpdateNotes(id: number, note: any) {
+    try {
       await candidatureService.UpdateNotes(id, note, token.value)
       await fetchNotes()
-    }catch(err){
+    } catch (err) {
       if (TokenExpired(err)) return
       throw err
     }
   }
 
-  async function deleteNotes(id:number) {
-    try{
+  async function deleteNotes(id: number) {
+    try {
       await candidatureService.deleteNotes(id, token.value)
       await fetchNotes()
-    }catch(err){
+    } catch (err) {
       if (TokenExpired(err)) return
       throw err
     }
@@ -106,20 +105,19 @@ export const useAuthStore = defineStore('auth',() => {
   //Admin
 
   async function fetchUsers() {
-    try{
+    try {
       const data = await candidatureService.getAllUser(token.value)
       CompteTuilisateur.value = data
-    }
-    catch (err){
+    } catch (err) {
       if (TokenExpired(err)) return
-      console.error("Erreur lors du chargemnt des utilisateurs", err)
+      console.error('Erreur lors du chargemnt des utilisateurs', err)
       CompteTuilisateur.value = []
       throw err
     }
   }
 
   function TokenExpired(err: any) {
-    if(err.response && err.response.status === 401){
+    if (err.response && err.response.status === 401) {
       clearToken()
       window.location.href = '/connexion'
       return true
@@ -127,19 +125,31 @@ export const useAuthStore = defineStore('auth',() => {
     return false
   }
 
-
-  //fonction pour vider le token et on supprime aussi les candidatures si le token a disparu
   function clearToken() {
     token.value = null
     user.value = null
     candidatures.value = []
     notes.value = []
     CompteTuilisateur.value = []
-    localStorage.removeItem('user_token')
+    sessionStorage.removeItem('user_token')
     localStorage.removeItem('user_data')
   }
 
-  return{
-    token, user, isAuthenticated, setAuth, clearToken, candidatures, fetchCandidatures, deleteCandidatures, notes, fetchNotes, addNotes, UpdateNotes, deleteNotes, fetchUsers, CompteTuilisateur
+  return {
+    token,
+    user,
+    isAuthenticated,
+    setAuth,
+    clearToken,
+    candidatures,
+    fetchCandidatures,
+    deleteCandidatures,
+    notes,
+    fetchNotes,
+    addNotes,
+    UpdateNotes,
+    deleteNotes,
+    fetchUsers,
+    CompteTuilisateur,
   }
 })
