@@ -213,6 +213,29 @@ const getContactLink = (text: string, typContact: string) => {
   }
     */
 }
+
+/*Logique pour la recherche*/
+const searchInput = ref<string>('')
+const filteredCandidatures = computed(() => {
+  if (!searchInput.value) {
+    return authStore.candidatures
+  }
+
+  const query = searchInput.value.toLowerCase().trim()
+
+  return authStore.candidatures.filter((candid) => {
+    return [
+      candid.company,
+      candid.position,
+      candid.status,
+      candid.type_contact,
+      candid.contact,
+      candid.notes,
+    ]
+      .filter(Boolean)
+      .some((field) => field.toString().toLowerCase().includes(query))
+  })
+})
 </script>
 
 <template>
@@ -435,6 +458,16 @@ const getContactLink = (text: string, typContact: string) => {
     </div>
   </div>
 
+  <!---Formulaire de recherche--->
+  <form id="search-form" class="mb-6 flex w-full justify-center px-2 sm:px-0">
+    <input
+      type="search"
+      v-model="searchInput"
+      placeholder="Rechercher une entreprise, un poste..."
+      class="h-12 w-full max-w-xl rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-800 shadow-sm transition duration-150 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+    />
+  </form>
+
   <!---Le Tableau--->
   <div class="p-4 md:p-8">
     <div class="w-full overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -456,8 +489,14 @@ const getContactLink = (text: string, typContact: string) => {
         </thead>
 
         <tbody class="divide-y divide-slate-100">
+          <tr v-if="filteredCandidatures.length === 0">
+            <td colspan="7" class="px-4 py-10 text-center text-slate-400 italic md:px-6">
+              Aucune candidature trouvée.
+            </td>
+          </tr>
+
           <tr
-            v-for="candid in authStore.candidatures"
+            v-for="candid in filteredCandidatures"
             :key="candid.id"
             class="transition-colors hover:bg-slate-50"
           >
