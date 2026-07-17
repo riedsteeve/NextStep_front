@@ -85,6 +85,8 @@ const getDate = () => {
         </RouterLink>
       </div>
 
+      <!---
+
       <div class="flex flex-col items-center p-4 text-center">
         <span class="mb-1 text-xs font-semibold tracking-wider text-purple-800 uppercase">
           - Nouvelles mise à jour -
@@ -96,7 +98,7 @@ const getDate = () => {
           </li>
         </ul>
       </div>
-
+--->
       <div class="border-t border-slate-100">
         <div class="bg-gray-100 p-3">
           <button

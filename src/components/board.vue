@@ -42,10 +42,16 @@ const messageError = ref(
 
 const URL_APPLICATION = import.meta.env.VITE_APPLICATION_API
 
+const isconnectedModalOpen = ref(false)
+
 //je charge la liste des candidatures
 onMounted(async () => {
   try {
     await authStore.fetchCandidatures()
+
+    if (authStore.token) {
+      isconnectedModalOpen.value = true
+    }
   } catch (error) {
     errorVisible.value = true
     message.value = 'Erreur lors du chargement des candidatures'
@@ -109,6 +115,7 @@ const openEditModal = (candid: any) => {
   isModalOpen.value = true
 }
 
+/*
 const deleteCandid = async (id: number) => {
   try {
     if (confirm('Voulez vous vraiment supprimer cette candidatures ?') == true) {
@@ -121,6 +128,7 @@ const deleteCandid = async (id: number) => {
     console.error('Erreur lors de la supression ! :', error)
   }
 }
+  */
 
 const submitForm = async (): Promise<void> => {
   try {
@@ -236,6 +244,29 @@ const filteredCandidatures = computed(() => {
       .some((field) => field.toString().toLowerCase().includes(query))
   })
 })
+
+//Alerte custom
+const isDeleteModalOpen = ref(false)
+const candidIdToDelete = ref<number | null>(null)
+
+const triggerDeleteConfirm = (id: number) => {
+  candidIdToDelete.value = id
+  isDeleteModalOpen.value = true
+}
+
+const confirmDelete = async () => {
+  if (candidIdToDelete.value === null) return
+
+  try {
+    await authStore.deleteCandidatures(candidIdToDelete.value)
+    message.value = 'Candidature supprimée !'
+  } catch (error: any) {
+    console.error('Erreur lors de la suppression ! :', error)
+  } finally {
+    isDeleteModalOpen.value = false
+    candidIdToDelete.value = null
+  }
+}
 </script>
 
 <template>
@@ -243,6 +274,36 @@ const filteredCandidatures = computed(() => {
     <div>
       <h1 class="mb-4 text-xl font-bold md:text-2xl">Mon Suivi de Candidatures</h1>
       <p>Bienvenue sur votre espace de suivi NextStep.</p>
+    </div>
+
+    <!--- Popup pour avertir le user des mises a jour a venir --->
+    <div
+      v-if="isconnectedModalOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+    >
+      <div
+        class="animate-in fade-in zoom-in-95 w-full max-w-sm rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-2xl duration-300"
+      >
+        <h3 class="text-lg font-bold text-slate-900">Hello cher(e)s utilisateurs de NextStep !</h3>
+        <p class="mt-2 text-sm text-slate-500">
+          Cette popup vous informe que des mises à jour de l'interface sont en cours.
+        </p>
+        <br />
+        <p class="mt-2 text-sm font-bold text-slate-800">
+          Rassurez-vous, elles n'interrompent pas votre utilisation de l'application.
+        </p>
+        <br />
+
+        <div class="mt-5">
+          <button
+            type="button"
+            @click="isconnectedModalOpen = false"
+            class="w-full rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-800"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="w-full md:w-auto">
@@ -468,6 +529,49 @@ const filteredCandidatures = computed(() => {
     />
   </form>
 
+  <!--- Alerte de Confirmation de Suppression Custom --->
+  <div
+    v-if="isDeleteModalOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm"
+  >
+    <div
+      class="animate-in fade-in zoom-in-95 w-full max-w-md rounded-2xl border border-slate-100 bg-white p-6 shadow-2xl duration-200"
+    >
+      <div
+        class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+      >
+        <i class="mdi mdi-alert-circle-outline text-2xl"></i>
+      </div>
+
+      <!-- Contenu textuel -->
+      <div class="text-center">
+        <h3 class="p-2 text-lg font-bold text-slate-950">Supprimer la candidature ?</h3>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Êtes-vous sûr de vouloir supprimer cette candidature ? Cette action est irréversible.
+        </p>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+        <button
+          type="button"
+          @click="isDeleteModalOpen = false"
+          class="w-full min-w-[100px] rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200 sm:w-auto"
+        >
+          Annuler
+        </button>
+        <button
+          type="button"
+          @click="confirmDelete"
+          class="w-full min-w-[100px] rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-700 sm:w-auto"
+        >
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!---Le Tableau--->
   <div class="p-4 md:p-8">
     <div class="w-full overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -561,7 +665,7 @@ const filteredCandidatures = computed(() => {
                 </button>
 
                 <button
-                  @click="deleteCandid(candid.id)"
+                  @click="triggerDeleteConfirm(candid.id)"
                   type="button"
                   class="group w-10 rounded-xl bg-rose-100 p-2 text-rose-600 transition-colors hover:bg-rose-200"
                   title="Supprimer la candidature"
@@ -569,12 +673,6 @@ const filteredCandidatures = computed(() => {
                   <i class="mdi mdi-trash-can text-sm text-red-600"></i>
                 </button>
               </div>
-            </td>
-          </tr>
-
-          <tr v-if="authStore.candidatures.length === 0">
-            <td colspan="5" class="px-4 py-10 text-center text-slate-400 italic md:px-6">
-              Aucune candidature pour le moment.
             </td>
           </tr>
         </tbody>
